@@ -70,7 +70,12 @@
           addListener(viewer, EVENT_TRANSITIONEND, proxy(_this.hidden, _this), true);
           removeClass(viewer, CLASS_IN);
         }, true);
-        _this.zoomTo(0, false, false, true);
+        if (options.transitionOpacity) {
+          removeClass(viewer, CLASS_IN);
+          _this.hidden();
+        } else {
+          _this.zoomTo(0, false, false, true);
+        }
       } else {
         removeClass(viewer, CLASS_IN);
         _this.hidden();
