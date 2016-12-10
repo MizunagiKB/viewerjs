@@ -29,6 +29,10 @@
         options.transition = false;
       }
 
+      if (options.transitionOpacity) {
+        CLASS_TRANSITION = NAMESPACE + '-transition-opacity';
+      }
+
       _this.isImg = isImg;
       _this.length = length;
       _this.count = 0;
