@@ -112,7 +112,7 @@
         image.style.cssText += (
           'width:' + viewerData.width + ';' +
           'height:' + viewerData.width + ';' +
-          'opacity:0.0'
+          'opacity:0.0;'
         );
       } else {
         image.style.cssText += (
