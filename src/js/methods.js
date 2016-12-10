@@ -52,7 +52,7 @@
       var element = _this.element;
       var viewer = _this.viewer;
 
-      if (options.inline || _this.transitioning || !_this.isShown) {
+      if (options.inline || !options.hidable || _this.transitioning || !_this.isShown) {
         return _this;
       }
 

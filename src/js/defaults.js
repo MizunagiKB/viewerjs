@@ -33,11 +33,17 @@
     // Enable CSS3 Transition for some special elements
     transition: true,
 
+    // Enable Transition Opacity
+    transitionOpacity: false,
+
     // Enable to request fullscreen when play
     fullscreen: true,
 
     // Enable keyboard support
     keyboard: true,
+
+    // Enable hidable
+    hidable: true,
 
     // Define interval of each image when playing
     interval: 5000,

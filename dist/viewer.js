@@ -5,7 +5,7 @@
  * Copyright (c) 2015-2016 Fengyuan Chen
  * Released under the MIT license
  *
- * Date: 2016-07-22T08:46:05.003Z
+ * Date: 2016-12-10T00:31:30.018Z
  */
 
 (function (global, factory) {
@@ -433,17 +433,28 @@
 
   function getEvent(event) {
     var e = event || window.event;
+    var eventDoc;
     var doc;
+    var body;
 
     // Fix target property (IE8)
     if (!e.target) {
       e.target = e.srcElement || document;
     }
 
-    if (!isNumber(e.pageX)) {
-      doc = document.documentElement;
-      e.pageX = e.clientX + (window.scrollX || doc && doc.scrollLeft || 0) - (doc && doc.clientLeft || 0);
-      e.pageY = e.clientY + (window.scrollY || doc && doc.scrollTop || 0) - (doc && doc.clientTop || 0);
+    if (!isNumber(e.pageX) && isNumber(e.clientX)) {
+      eventDoc = event.target.ownerDocument || document;
+      doc = eventDoc.documentElement;
+      body = eventDoc.body;
+
+      e.pageX = e.clientX + (
+        ((doc && doc.scrollLeft) || (body && body.scrollLeft) || 0) -
+        ((doc && doc.clientLeft) || (body && body.clientLeft) || 0)
+      );
+      e.pageY = e.clientY + (
+        ((doc && doc.scrollTop) || (body && body.scrollTop) || 0) -
+        ((doc && doc.clientTop) || (body && body.clientTop) || 0)
+      );
     }
 
     return e;
@@ -969,6 +980,10 @@
           top: (viewerHeight - height) / 2
         };
 
+        if (options.transitionOpacity) {
+          imageData.opacity = 1.0;
+        }
+
         initialImageData = extend({}, imageData);
 
         if (options.rotatable) {
@@ -1003,6 +1018,7 @@
         height: imageData.height,
         marginLeft: imageData.left,
         marginTop: imageData.top,
+        opacity: imageData.opacity,
         WebkitTransform: transform,
         msTransform: transform,
         transform: transform
@@ -1133,13 +1149,24 @@
       removeClass(image, CLASS_INVISIBLE);
 
       image.style.cssText = (
-        'width:0;' +
-        'height:0;' +
-        'margin-left:' + viewerData.width / 2 + 'px;' +
-        'margin-top:' + viewerData.height / 2 + 'px;' +
         'max-width:none!important;' +
         'visibility:visible;'
       );
+
+      if (options.transitionOpacity) {
+        image.style.cssText += (
+          'width:' + viewerData.width + ';' +
+          'height:' + viewerData.width + ';' +
+          'opacity:0.0'
+        );
+      } else {
+        image.style.cssText += (
+          'width:0;' +
+          'height:0;' +
+          'margin-left:' + viewerData.width / 2 + 'px;' +
+          'margin-top:' + viewerData.height / 2 + 'px;'
+        );
+      }
 
       _this.initImage(function () {
         toggleClass(image, CLASS_TRANSITION, options.transition);
@@ -1364,7 +1391,6 @@
       }
 
       if (action) {
-        preventDefault(e);
         _this.action = action;
         _this.startX = touch ? touch.pageX : e.pageX;
         _this.startY = touch ? touch.pageY : e.pageY;
@@ -1421,8 +1447,6 @@
       var action = _this.action;
 
       if (action) {
-        preventDefault(e);
-
         if (action === 'move' && _this.options.transition) {
           addClass(_this.image, CLASS_TRANSITION);
         }
@@ -1485,7 +1509,7 @@
       var element = _this.element;
       var viewer = _this.viewer;
 
-      if (options.inline || _this.transitioning || !_this.isShown) {
+      if (options.inline || !options.hidable || _this.transitioning || !_this.isShown) {
         return _this;
       }
 
@@ -2342,7 +2366,7 @@
       var imageData = _this.imageData;
       var viewerData = _this.viewerData;
 
-      return imageData.left >= 0 && imageData.top >= 0 &&
+      return _this.length > 1 && imageData.left >= 0 && imageData.top >= 0 &&
         imageData.width <= viewerData.width &&
         imageData.height <= viewerData.height;
     }
@@ -2383,11 +2407,17 @@
     // Enable CSS3 Transition for some special elements
     transition: true,
 
+    // Enable Transition Opacity
+    transitionOpacity: false,
+
     // Enable to request fullscreen when play
     fullscreen: true,
 
     // Enable keyboard support
     keyboard: true,
+
+    // Enable hidable
+    hidable: true,
 
     // Define interval of each image when playing
     interval: 5000,
@@ -2418,8 +2448,7 @@
     url: 'src',
 
     // Event shortcuts
-    build: null,
-    built: null,
+    ready: null,
     show: null,
     shown: null,
     hide: null,

@@ -104,13 +104,24 @@
       removeClass(image, CLASS_INVISIBLE);
 
       image.style.cssText = (
-        'width:0;' +
-        'height:0;' +
-        'margin-left:' + viewerData.width / 2 + 'px;' +
-        'margin-top:' + viewerData.height / 2 + 'px;' +
         'max-width:none!important;' +
         'visibility:visible;'
       );
+
+      if (options.transitionOpacity) {
+        image.style.cssText += (
+          'width:' + viewerData.width + ';' +
+          'height:' + viewerData.width + ';' +
+          'opacity:0.0'
+        );
+      } else {
+        image.style.cssText += (
+          'width:0;' +
+          'height:0;' +
+          'margin-left:' + viewerData.width / 2 + 'px;' +
+          'margin-top:' + viewerData.height / 2 + 'px;'
+        );
+      }
 
       _this.initImage(function () {
         toggleClass(image, CLASS_TRANSITION, options.transition);

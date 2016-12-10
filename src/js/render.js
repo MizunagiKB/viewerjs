@@ -155,6 +155,10 @@
           top: (viewerHeight - height) / 2
         };
 
+        if (options.transitionOpacity) {
+          imageData.opacity = 1.0;
+        }
+
         initialImageData = extend({}, imageData);
 
         if (options.rotatable) {
@@ -189,6 +193,7 @@
         height: imageData.height,
         marginLeft: imageData.left,
         marginTop: imageData.top,
+        opacity: imageData.opacity,
         WebkitTransform: transform,
         msTransform: transform,
         transform: transform
